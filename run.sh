@@ -1,18 +1,28 @@
 #!/bin/bash
 
-JUG=$(docker ps -q jug)
-echo ${JUG}
-if [ -z "${JUG}" ]; then
-	docker run --name jug -v ${HOME}/src/lucy:/root/workspace busybox true
+
+if [ -z "$(docker ps -aq jug)" ]; then
+	SOURCES="${HOME}/src/lucy"
+
+	echo "Start a volume for the sources in [$SOURCES]"
+	docker run --name jug -v $SOURCES:/root/workspace busybox true
 fi
 
-ECLIPSE=$(docker ps -q eclipse)
-if [ -z "${ECLIPSE}" ]; then
+if [ -z "$(docker ps -q eclipse)" ]; then
 	docker run -d --volumes-from=jug -p 49154:22 -p 8080:8080 --name eclipse dgageot/eclipse
 else
 	docker restart eclipse
 fi
 
-DOCKER_IP=$(boot2docker ip 2> /dev/null)
+if [[ ! "${DOCKER_HOST}" =~ ^tcp://(.*):(.*)$ ]]; then
+	echo "Invalid DOCKER_HOST env variable"
+	exit
+else
+	DOCKER_IP=${BASH_REMATCH[1]}
+fi
 
-ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -Y -X root@${DOCKER_IP} -p 49154 eclipse/eclipse -data workspace
+ssh -o StrictHostKeyChecking=no \
+		-o UserKnownHostsFile=/dev/null \
+		-Y -X root@${DOCKER_IP} \
+		-p 49154 \
+		eclipse/eclipse -data workspace
