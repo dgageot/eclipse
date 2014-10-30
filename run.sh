@@ -14,6 +14,8 @@ else
 	docker restart eclipse
 fi
 
+sleep 1
+
 if [[ ! "${DOCKER_HOST}" =~ ^tcp://(.*):(.*)$ ]]; then
 	echo "Invalid DOCKER_HOST env variable"
 	exit
