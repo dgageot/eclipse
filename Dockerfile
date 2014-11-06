@@ -4,8 +4,6 @@
 # Run:
 #   ./run.sh
 
-# DOCKER_VERSION 1.2
-
 FROM ubuntu:14.10
 MAINTAINER David Gageot <david@gageot.net>
 
