@@ -1,16 +1,12 @@
 #!/bin/bash
 
-# In the real life, we dont rm the sources volume each time.
+# In the real life, we should start a volume container
 # But it makes the demo more reproductible.
 #
 SOURCES="${HOME}/src/lucy"
-echo "Start a volume for the sources in [$SOURCES]"
-docker rm -f jug >/dev/null 2>&1
-docker run --name jug -v $SOURCES:/root/workspace busybox true
-
-docker rm -f eclipse >/dev/null 2>&1
 echo "Start sshd container"
-docker run -d --volumes-from=jug -p 49154:22 -p 8080:8080 --name eclipse dgageot/eclipse
+docker rm -f eclipse >/dev/null 2>&1
+docker run -d -v $SOURCES:/root/workspace -v $HOME/.m2:/root/.m2 -p 49154:22 -p 8080:8080 --name eclipse dgageot/eclipse
 
 sleep 1
 
@@ -21,7 +17,7 @@ else
 	DOCKER_IP=${BASH_REMATCH[1]}
 fi
 
-echo "ssh to launch eclipse"
+echo "Ssh to contsiner to launch eclipse"
 ssh -o StrictHostKeyChecking=no \
 		-o UserKnownHostsFile=/dev/null \
 		-Y -X root@${DOCKER_IP} \
