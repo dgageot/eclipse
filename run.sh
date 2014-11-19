@@ -17,7 +17,7 @@ else
 	DOCKER_IP=${BASH_REMATCH[1]}
 fi
 
-echo "Ssh to contsiner to launch eclipse"
+echo "Ssh the container to launch Eclipse"
 ssh -o StrictHostKeyChecking=no \
 		-o UserKnownHostsFile=/dev/null \
 		-Y -X root@${DOCKER_IP} \
